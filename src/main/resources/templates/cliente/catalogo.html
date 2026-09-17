@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>STARDINASTY | Catálogo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body class="store-shell">
+<nav class="navbar navbar-expand-lg store-nav sticky-top">
+    <div class="container py-2">
+        <a class="navbar-brand brand-mark" th:href="@{/}">STAR<span>DINASTY</span></a>
+        <div class="d-flex align-items-center gap-3">
+            <span class="user-chip"><i class="bi bi-person-circle"></i> Cliente</span>
+            <a class="cart-trigger" href="#cart-panel"><i class="bi bi-bag"></i><span th:text="${totalItems}">0</span></a>
+            <form th:action="@{/logout}" method="post"><button class="btn btn-outline-light btn-sm" type="submit">Salir</button></form>
+        </div>
+    </div>
+</nav>
+
+<main class="container py-5">
+    <div th:if="${exito}" class="alert alert-success" th:text="${exito}"></div>
+    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+    <section class="catalog-hero mb-5">
+        <div><p class="eyebrow">NUEVA TEMPORADA / 2026</p><h1>Viste tu propia<br><em>frecuencia.</em></h1><p class="hero-copy">Piezas urbanas seleccionadas para quienes no necesitan pedir permiso para destacar.</p></div>
+        <div class="hero-orbit"><i class="bi bi-stars"></i><small>CURATED<br>DROP</small></div>
+    </section>
+
+    <div class="row g-4 align-items-start">
+        <section class="col-lg-8">
+            <div class="section-heading"><div><p class="eyebrow">SELECCIÓN ACTUAL</p><h2>Productos disponibles</h2></div><span class="stock-note"><i class="bi bi-lightning-charge-fill"></i> Stock actualizado</span></div>
+            <div class="row g-4">
+                <div class="col-md-6" th:each="p : ${productos}">
+                    <article class="product-tile h-100">
+                        <div class="product-top"><span class="product-code" th:text="${p.referenciaProducto}">REF</span><span class="stock-pill" th:text="${p.cantidad + ' disponibles'}">0 disponibles</span></div>
+                        <div class="product-swatch"><i class="bi bi-box-seam"></i></div>
+                        <p class="eyebrow mb-1" th:text="${p.categoria != null ? p.categoria.nombre : 'COLECCIÓN'}">COLECCIÓN</p>
+                        <h3 th:text="${p.nombre}">Producto</h3>
+                        <p class="product-description" th:text="${p.descripcion}">Descripción del producto.</p>
+                        <div class="product-footer"><strong th:text="${'$' + p.valorVenta}">$0</strong>
+                            <form th:action="@{/carrito/agregar}" method="post" class="add-form">
+                                <input type="hidden" name="idProducto" th:value="${p.idProducto}">
+                                <input class="quantity-input" type="number" name="cantidad" min="1" th:max="${p.cantidad}" value="1" required>
+                                <button class="btn btn-accent" type="submit" th:disabled="${p.cantidad <= 0}"><i class="bi bi-plus-lg"></i> Añadir</button>
+                            </form>
+                        </div>
+                    </article>
+                </div>
+                <div class="col-12" th:if="${#lists.isEmpty(productos)}"><div class="empty-state"><i class="bi bi-box2"></i><h3>Catálogo en preparación</h3><p>Vuelve pronto para descubrir nuevos lanzamientos.</p></div></div>
+            </div>
+        </section>
+
+        <aside class="col-lg-4" id="cart-panel">
+            <div class="cart-panel">
+                <div class="cart-heading"><div><p class="eyebrow">TU SELECCIÓN</p><h2>Bolsa <span th:text="${'(' + totalItems + ')'}">(0)</span></h2></div><i class="bi bi-bag-heart"></i></div>
+                <div th:if="${#lists.isEmpty(carrito)}" class="empty-cart"><i class="bi bi-bag"></i><p>Tu bolsa está esperando una pieza especial.</p></div>
+                <div th:unless="${#lists.isEmpty(carrito)}">
+                    <div class="cart-line" th:each="item : ${carrito}">
+                        <div><strong th:text="${item.producto.nombre}">Producto</strong><small th:text="${item.cantidad + ' x $' + item.producto.valorVenta}">1 x $0</small></div>
+                        <div class="text-end"><b th:text="${'$' + item.subtotal}">$0</b><a class="remove-link" th:href="@{/carrito/eliminar/{id}(id=${item.producto.idProducto})}"><i class="bi bi-x"></i> quitar</a></div>
+                    </div>
+                    <div class="cart-total"><span>Total</span><strong th:text="${'$' + totalCarrito}">$0</strong></div>
+                    <form th:action="@{/venta/checkout}" method="post">
+                        <label class="eyebrow mb-2">MÉTODO DE PAGO</label>
+                        <select name="metodoPago" class="form-select dark-select mb-3"><option value="EFECTIVO">Efectivo</option><option value="NEQUI">Nequi</option></select>
+                        <button class="btn btn-accent w-100 py-3" type="submit"><i class="bi bi-arrow-right"></i> Finalizar compra</button>
+                    </form>
+                    <a class="clear-cart" th:href="@{/carrito/vaciar}"><i class="bi bi-trash3"></i> Vaciar bolsa</a>
+                </div>
+            </div>
+        </aside>
+    </div>
+</main>
+</body>
+</html>
+
+    <!-- Contenido Principal -->
+    <main class="container my-5">
+        <h2 class="mb-4 text-center text-uppercase fw-bold">Catálogo de Productos</h2>
+        
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            <!-- Tarjeta de Producto 1 -->
+            <div class="col">
+                <div class="card h-100 shadow-sm border-0">
+                    <img src="https://via.placeholder.com/300x200" class="card-img-top" alt="Producto">
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">Camiseta OverSize</h5>
+                        <p class="card-text text-muted small">Algodón pesado 100% con estampado urbano.</p>
+                        <div class="mt-auto d-flex justify-content-between align-items-center">
+                            <span class="fs-5 fw-bold">$85.000</span>
+                            <button class="btn btn-dark btn-sm"><i class="bi bi-plus-lg"></i> Agregar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tarjeta de Producto 2 -->
+            <div class="col">
+                <div class="card h-100 shadow-sm border-0">
+                    <img src="https://via.placeholder.com/300x200" class="card-img-top" alt="Producto">
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">Chaqueta Vintage</h5>
+                        <p class="card-text text-muted small">Diseño retro con acabados metálicos.</p>
+                        <div class="mt-auto d-flex justify-content-between align-items-center">
+                            <span class="fs-5 fw-bold">$180.000</span>
+                            <button class="btn btn-dark btn-sm"><i class="bi bi-plus-lg"></i> Agregar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Offcanvas Carrito -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="carritoOffcanvas">
+        <div class="offcanvas-header border-bottom">
+            <h5 class="offcanvas-title fw-bold">Tu Carrito</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+        </div>
+        <div class="offcanvas-body d-flex flex-column">
+            <ul class="list-group list-group-flush flex-grow-1">
+                <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                    <div>
+                        <h6 class="my-0">Camiseta OverSize</h6>
+                        <small class="text-muted">Cantidad: 1</small>
+                    </div>
+                    <span class="text-muted">$85.000</span>
+                </li>
+            </ul>
+            <div class="border-top pt-3 mt-auto">
+                <div class="d-flex justify-content-between fs-5 fw-bold mb-3">
+                    <span>Total:</span>
+                    <span>$85.000</span>
+                </div>
+                <a href="confirmacion.html" class="btn btn-dark w-100 py-2">Procesar Compra</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Productos — Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root { 
+            --bg-main: #080706; 
+            --bg-card: #12100d; 
+            --gold-primary: #c8a84b; 
+            --text-main: #f0ead8; 
+            --border-wire: rgba(200, 168, 75, 0.2); 
+            --danger: #d9534f;
+            --success: #5cb85c;
+            --info: #0275d8;
+        }
+        body { background: var(--bg-main); color: var(--text-main); font-family: 'Montserrat', sans-serif; padding: 30px; }
+        h1 { font-family: 'Cormorant Garamond', serif; color: var(--gold-primary); margin-bottom: 20px; }
+        .grid { display: grid; grid-template-columns: 360px 1fr; gap: 30px; }
+        .card { background: var(--bg-card); border: 1px solid var(--border-wire); padding: 20px; }
+        form label { font-size: 0.8rem; color: var(--gold-primary); display: block; margin-top: 10px; margin-bottom: 4px; }
+        form input, form select, form textarea { 
+            width: 100%; padding: 10px; margin-bottom: 12px; background: #1a1713; 
+            border: 1px solid var(--border-wire); color: var(--text-main); box-sizing: border-box;
+        }
+        .checkbox-group { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 12px; background: #1a1713; padding: 10px; border: 1px solid var(--border-wire); }
+        .checkbox-item { display: flex; align-items: center; gap: 5px; font-size: 0.8rem; }
+        .checkbox-item input { width: auto; margin: 0; }
+        .btn-submit { background: var(--gold-primary); color: #080706; border: none; padding: 10px; cursor: pointer; font-weight: 600; width: 100%; text-transform: uppercase; margin-top: 10px; }
+        .btn-cancel { display: block; text-align: center; background: transparent; color: var(--text-main); border: 1px solid var(--border-wire); padding: 8px; margin-top: 8px; text-decoration: none; font-size: 0.8rem; text-transform: uppercase; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid var(--border-wire); padding: 10px; text-align: left; font-size: 0.85rem; vertical-align: middle; }
+        th { background: #1a1713; color: var(--gold-primary); }
+        .badge { padding: 3px 8px; border-radius: 3px; font-size: 0.75rem; font-weight: bold; }
+        .badge-active { background: rgba(92, 184, 92, 0.2); color: var(--success); border: 1px solid var(--success); }
+        .badge-inactive { background: rgba(217, 83, 79, 0.2); color: var(--danger); border: 1px solid var(--danger); }
+        .btn-action { color: var(--gold-primary); text-decoration: none; font-size: 0.8rem; margin-right: 8px; }
+        .btn-action:hover { text-decoration: underline; }
+        .error-msg { color: var(--danger); font-size: 0.75rem; display: block; margin-top: -8px; margin-bottom: 10px; }
+        .img-thumb { width: 45px; height: 45px; object-fit: cover; border-radius: 4px; border: 1px solid var(--border-wire); }
+        .preview-img { width: 80px; height: 80px; object-fit: cover; border-radius: 4px; border: 1px solid var(--border-wire); margin-bottom: 10px; display: block; }
+    </style>
+</head>
+<body>
+    <div style="margin-bottom: 20px;">
+        <a th:href="@{/admin/dashboard}" style="color:var(--gold-primary); text-decoration:none;">&larr; Volver al Dashboard</a>
+    </div>
+    <h1>Gestión de Productos</h1>
+
+    <div class="grid">
+        <!-- FORMULARIO -->
+        <div class="card">
+            <h3 th:text="${modoEdicion ? 'Editar Producto #' + nuevoProducto.idProducto : 'Nuevo Producto'}">Nuevo Producto</h3>
+            
+            <form th:action="@{/admin/productos/guardar}" th:object="${nuevoProducto}" method="post" enctype="multipart/form-data">
+                <input type="hidden" th:field="*{idProducto}" />
+                <input type="hidden" th:field="*{estado}" />
+                <input type="hidden" th:field="*{imagen}" />
+
+                <label>Imagen del Producto</label>
+                <div th:if="${nuevoProducto.imagen != null and !nuevoProducto.imagen.isEmpty()}">
+                    <img th:src="@{'/uploads/' + ${nuevoProducto.imagen}}" class="preview-img" alt="Imagen actual">
+                </div>
+                <input type="file" name="file" accept="image/png, image/jpeg, image/jpg, image/webp">
+
+                <label>Nombre del Producto</label>
+                <input type="text" th:field="*{nombre}" placeholder="Ej: Chaqueta Cuero" required>
+
+                <label>Categoría</label>
+                <select th:field="*{categoria.idCategoria}" required>
+                    <option value="">-- Seleccionar Categoría --</option>
+                    <option th:each="cat : ${categorias}" th:value="${cat.idCategoria}" th:text="${cat.nombre}"></option>
+                </select>
+
+                <label>Precio ($)</label>
+                <input type="number" 
+                       th:field="*{precio}" 
+                       placeholder="Entre 50000 y 600000" 
+                       min="50000" 
+                       max="600000" 
+                       required>
+                <span th:if="${#fields.hasErrors('precio')}" th:errors="*{precio}" class="error-msg"></span>
+
+                <label>Descripción</label>
+                <textarea th:field="*{descripcion}" rows="3" placeholder="Descripción breve"></textarea>
+
+                <label>Tallas Disponibles</label>
+                <div class="checkbox-group">
+                    <div th:each="talla : ${tallas}" class="checkbox-item">
+                        <input type="checkbox" th:field="*{tallas}" th:value="${talla.idTalla}" th:id="${'talla_' + talla.idTalla}">
+                        <label th:for="${'talla_' + talla.idTalla}" th:text="${talla.nombre}" style="display:inline; margin:0; color:var(--text-main);"></label>
+                    </div>
+                </div>
+
+                <label>Colores Disponibles</label>
+                <div class="checkbox-group">
+                    <div th:each="color : ${colores}" class="checkbox-item">
+                        <input type="checkbox" th:field="*{colores}" th:value="${color.idColor}" th:id="${'color_' + color.idColor}">
+                        <label th:for="${'color_' + color.idColor}" th:text="${color.nombre}" style="display:inline; margin:0; color:var(--text-main);"></label>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-submit" th:text="${modoEdicion ? 'Actualizar Producto' : 'Guardar Producto'}">Guardar Producto</button>
+                <a th:if="${modoEdicion}" th:href="@{/admin/productos}" class="btn-cancel">Cancelar Edición</a>
+            </form>
+        </div>
+
+        <!-- TABLA DE PRODUCTOS -->
+        <div class="card">
+            <h3>Lista de Productos</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Imagen</th>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Categoría</th>
+                        <th>Precio</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="prod : ${productos}">
+                        <td>
+                            <img th:if="${prod.imagen != null and !prod.imagen.isEmpty()}" 
+                                 th:src="@{'/uploads/' + ${prod.imagen}}" 
+                                 class="img-thumb" alt="Producto">
+                            <span th:if="${prod.imagen == null or prod.imagen.isEmpty()}" style="color:#777; font-size:0.75rem;">Sin foto</span>
+                        </td>
+                        <td th:text="${prod.idProducto}"></td>
+                        <td th:text="${prod.nombre}"></td>
+                        <td th:text="${prod.categoria != null ? prod.categoria.nombre : 'Sin categoría'}"></td>
+                        <td th:text="${'$ ' + #numbers.formatDecimal(prod.precio, 0, 'POINT', 0, 'COMMA')}"></td>
+                        <td>
+                            <span th:if="${prod.estado == 'A'}" class="badge badge-active">Activo</span>
+                            <span th:if="${prod.estado != 'A'}" class="badge badge-inactive">Inactivo</span>
+                        </td>
+                        <td>
+                            <a th:href="@{/admin/productos(editarId=${prod.idProducto})}" class="btn-action" style="color:var(--info)">Editar</a>
+                            <a th:if="${prod.estado == 'A'}" th:href="@{/admin/productos/inactivar/{id}(id=${prod.idProducto})}" class="btn-action" style="color:var(--danger)">Inactivar</a>
+                            <a th:if="${prod.estado != 'A'}" th:href="@{/admin/productos/activar/{id}(id=${prod.idProducto})}" class="btn-action" style="color:var(--success)">Activar</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

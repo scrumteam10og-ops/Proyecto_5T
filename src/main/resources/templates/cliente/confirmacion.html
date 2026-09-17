@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>¡Compra Confirmada! - STARDINASTY</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="/css/styles.css">
+    <style>
+        .confirmation-card {
+            max-width: 550px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        }
+    </style>
+</head>
+<body class="bg-light d-flex align-items-center min-vh-100">
+
+<div class="container py-5 text-center">
+    <div class="card confirmation-card border-0 mx-auto p-4 bg-white">
+        <div class="card-body">
+            <div class="mb-4">
+                <i class="bi bi-check-circle-fill text-success" style="font-size: 4.5rem;"></i>
+            </div>
+            
+            <h2 class="fw-bold text-dark mb-2">¡Pedido Confirmado!</h2>
+            <p class="text-muted mb-4">Gracias por tu compra en STARDINASTY. Tu pedido ha sido procesado correctamente.</p>
+
+            <div class="p-3 bg-light rounded-3 text-start mb-4">
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-muted">Método de Pago:</span>
+                    <span class="fw-bold text-primary">
+                        <i th:if="${metodoPago == 'NEQUI'}" class="bi bi-qr-code"></i>
+                        <i th:if="${metodoPago == 'EFECTIVO'}" class="bi bi-cash-stack"></i>
+                        <span th:text="${metodoPago}">NEQUI</span>
+                    </span>
+                </div>
+                
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-muted">Unidades Compradas:</span>
+                    <span class="fw-bold" th:text="${itemsComprados ?: 0}">0</span>
+                </div>
+
+                <hr class="my-2">
+
+                <div class="d-flex justify-content-between fs-5 fw-bold">
+                    <span>Total Pagado:</span>
+                    <span class="text-success" th:text="${'$' + (totalCompra ?: 0)}">$0</span>
+                </div>
+            </div>
+
+            <div th:if="${metodoPago == 'NEQUI'}" class="alert alert-info py-2 px-3 small text-start mb-4">
+                <i class="bi bi-info-circle-fill"></i> Recuerda escanear el código QR en la entrega para completar el pago.
+            </div>
+
+            <a th:if="${facturaId != null}"
+               th:href="@{/venta/factura/{id}/descargar(id=${facturaId})}"
+               class="btn btn-success w-100 py-2 fw-bold rounded-3 mb-2">
+                <i class="bi bi-download"></i> Descargar Factura
+            </a>
+
+            <a href="/" class="btn btn-primary w-100 py-2 fw-bold rounded-3">
+                <i class="bi bi-house-door"></i> Volver al Catálogo
+            </a>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

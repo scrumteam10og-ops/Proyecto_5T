@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>STARDINASTY - Lista de Inventario</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body class="bg-light">
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="/admin/dashboard">STARDINASTY Admin</a>
+        <div>
+            <a href="/admin/dashboard" class="btn btn-outline-light btn-sm me-2"><i class="bi bi-speedometer2"></i> Dashboard</a>
+            <a href="/catalogo" class="btn btn-outline-info btn-sm"><i class="bi bi-shop"></i> Ir a Tienda</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container py-3">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold"><i class="bi bi-boxes"></i> Inventario de Productos</h3>
+        <a th:href="@{/admin/inventario/nuevo}" class="btn btn-primary fw-bold">
+            <i class="bi bi-plus-circle"></i> Nuevo Producto
+        </a>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Código</th>
+                            <th>Ref</th>
+                            <th>Nombre</th>
+                            <th>Categoría</th>
+                            <th>Stock</th>
+                            <th>Precio Venta</th>
+                            <th>Valor Total</th>
+                            <th>Estado</th>
+                            <th class="text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="p : ${listaInventario}">
+                            <!-- Muestra el código formateado tipo P_001 -->
+                            <td class="fw-bold text-secondary" th:text="${'P_' + #numbers.formatInteger(p.idProducto, 3)}">P_001</td>
+                            <td th:text="${p.referenciaProducto}">Ref</td>
+                            <td th:text="${p.nombre}">Nombre</td>
+                            <td>
+                                <span class="badge bg-info text-dark" 
+                                      th:text="${p.categoria != null ? p.categoria.nombre : 'Sin Cat.'}">General</span>
+                            </td>
+                            <td th:text="${p.cantidad}">0</td>
+                            <td th:text="${'$' + p.valorVenta}">$0</td>
+                            <td th:text="${'$' + p.valorTotal}">$0</td>
+                            <td>
+                                <span th:if="${p.estado == 'A'}" class="badge bg-success">Activo</span>
+                                <span th:unless="${p.estado == 'A'}" class="badge bg-secondary">Inactivo</span>
+                            </td>
+                            <td class="text-center">
+                                <a th:href="@{/admin/inventario/editar/{id}(id=${p.idProducto})}" class="btn btn-warning btn-sm me-1">
+                                    <i class="bi bi-pencil-square"></i> Editar
+                                </a>
+                                <a th:href="@{/admin/inventario/eliminar/{id}(id=${p.idProducto})}" 
+                                   class="btn btn-danger btn-sm" 
+                                   onclick="return confirm('¿Seguro que deseas eliminar este producto?');">
+                                    <i class="bi bi-trash"></i> Eliminar
+                                </a>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(listaInventario)}">
+                            <td colspan="9" class="text-center py-4 text-muted">No hay productos registrados en el inventario.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

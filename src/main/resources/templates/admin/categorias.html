@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Categorías — Star Dinasty</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg-main: #080706; --bg-card: #12100d; --gold-primary: #c8a84b; --text-main: #f0ead8; --border-wire: rgba(200, 168, 75, 0.2); }
+        body { background: var(--bg-main); color: var(--text-main); font-family: 'Montserrat', sans-serif; padding: 30px; }
+        h1 { font-family: 'Cormorant Garamond', serif; color: var(--gold-primary); margin-bottom: 20px; }
+        .grid { display: grid; grid-template-columns: 320px 1fr; gap: 30px; }
+        .card { background: var(--bg-card); border: 1px solid var(--border-wire); padding: 20px; }
+        form input { width: 100%; padding: 10px; margin-bottom: 12px; background: #1a1713; border: 1px solid var(--border-wire); color: var(--text-main); }
+        button { background: var(--gold-primary); color: #080706; border: none; padding: 10px; cursor: pointer; font-weight: 600; width: 100%; text-transform: uppercase; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid var(--border-wire); padding: 10px; text-align: left; font-size: 0.85rem; }
+        th { background: #1a1713; color: var(--gold-primary); }
+    </style>
+</head>
+<body>
+    <div style="margin-bottom: 20px;">
+        <a th:href="@{/admin/dashboard}" style="color:var(--gold-primary); text-decoration:none;">&larr; Volver al Dashboard</a>
+    </div>
+    <h1>Gestión de Categorías</h1>
+    <div class="grid">
+        <div class="card">
+            <h3>Nueva Categoría</h3>
+            <form th:action="@{/admin/categorias/guardar}" th:object="${nuevaCategoria}" method="post">
+                <input type="text" th:field="*{nombre}" placeholder="Nombre Categoría" required>
+                <input type="text" th:field="*{descripcion}" placeholder="Descripción">
+                <button type="submit">Guardar Categoría</button>
+            </form>
+        </div>
+        <div class="card">
+            <h3>Categorías Existentes</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Descripción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="cat : ${categorias}">
+                        <td th:text="${cat.idCategoria}"></td>
+                        <td th:text="${cat.nombre}"></td>
+                        <td th:text="${cat.descripcion}"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

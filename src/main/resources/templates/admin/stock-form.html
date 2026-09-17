@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>STARDINASTY - Registrar Stock Inicial</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body class="bg-light">
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="/admin/dashboard">STARDINASTY Admin</a>
+    </div>
+</nav>
+
+<div class="container py-3">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-primary text-white fw-bold">
+                    <span th:text="${compra.idStock != null ? 'Editar Registro de Stock' : 'Registrar Nueva Compra / Stock Inicial'}">Formulario Stock</span>
+                </div>
+                <div class="card-body p-4">
+                    <form th:action="@{/admin/stock/guardar}" th:object="${compra}" method="post">
+                        <input type="hidden" th:field="*{idStock}" />
+
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Referencia del Producto *</label>
+                            <input type="text" th:field="*{referenciaProducto}" class="form-control" placeholder="Ej: 5SN0" required />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Nombre del Producto *</label>
+                            <input type="text" th:field="*{nombre}" class="form-control" placeholder="Ej: Chaqueta Vintage" required />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Categoría (para Inventario)</label>
+                            <select name="idCategoria" class="form-select">
+                                <option value="" selected>Seleccione una categoría</option>
+                                <option th:each="cat : ${categorias}" 
+                                        th:value="${cat.idCategoria}" 
+                                        th:text="${cat.nombre}">
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Descripción</label>
+                            <textarea th:field="*{descripcion}" class="form-control" rows="2"></textarea>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-6 mb-3">
+                                <label class="form-label small fw-bold">Cantidad *</label>
+                                <input type="number" id="cantidad" th:field="*{cantidad}" class="form-control" min="1" required oninput="calcularPrecios()" />
+                            </div>
+                            <div class="col-6 mb-3">
+                                <label class="form-label small fw-bold">Valor Unitario (Costo) *</label>
+                                <input type="number" id="valorUnitario" th:field="*{valorUnitario}" class="form-control" min="0" required oninput="calcularPrecios()" />
+                            </div>
+                        </div>
+
+                        <!-- Panel con desglose automático de utilidad -->
+                        <div class="alert alert-info py-2 my-2">
+                            <div class="d-flex justify-content-between small">
+                                <span>Precio Venta Sugerido (+60% Utilidad):</span>
+                                <strong id="lblValorVenta">$0</strong>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="/admin/stock" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left"></i> Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-success fw-bold">
+                                <i class="bi bi-check-circle"></i> Guardar Stock
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function calcularPrecios() {
+        const valorUnitario = parseFloat(document.getElementById('valorUnitario').value) || 0;
+        const valorVenta = Math.round(valorUnitario * 1.60);
+        document.getElementById('lblValorVenta').innerText = '$' + valorVenta.toLocaleString('es-CO');
+    }
+</script>
+
+</body>
+</html>

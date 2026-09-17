@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Inventario — Star Dinasty</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg-main: #080706; --bg-card: #12100d; --gold-primary: #c8a84b; --text-main: #f0ead8; --border-wire: rgba(200, 168, 75, 0.2); }
+        body { background: var(--bg-main); color: var(--text-main); font-family: 'Montserrat', sans-serif; padding: 30px; }
+        h1 { font-family: 'Cormorant Garamond', serif; color: var(--gold-primary); margin-bottom: 20px; }
+        .card { background: var(--bg-card); border: 1px solid var(--border-wire); padding: 20px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid var(--border-wire); padding: 12px; text-align: left; font-size: 0.85rem; }
+        th { background: #1a1713; color: var(--gold-primary); }
+        input[type="number"] { width: 80px; padding: 5px; background: #1a1713; border: 1px solid var(--border-wire); color: var(--text-main); }
+        .btn-update { background: var(--gold-primary); border: none; padding: 6px 12px; cursor: pointer; font-size: 0.75rem; font-weight: 600; }
+    </style>
+</head>
+<body>
+    <div style="margin-bottom:20px;">
+        <!-- Retorno condicional según el rol -->
+        <a sec:authorize="hasRole('ROLE_ADMIN')" th:href="@{/admin/dashboard}" style="color:var(--gold-primary); text-decoration:none;">&larr; Volver al Dashboard Admin</a>
+        <a sec:authorize="hasRole('ROLE_EMPLEADO') and !hasRole('ROLE_ADMIN')" th:href="@{/empleado/dashboard}" style="color:var(--gold-primary); text-decoration:none;">&larr; Volver al Dashboard Empleado</a>
+    </div>
+
+    <h1>Control de Inventario</h1>
+    <div class="card">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID Inv</th>
+                    <th>Producto</th>
+                    <th>Stock Actual</th>
+                    <th>Stock Mínimo</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="inv : ${inventarios}">
+                    <form th:action="@{/inventario/actualizar}" method="post">
+                        <input type="hidden" name="idInventario" th:value="${inv.idInventario}">
+                        <td th:text="${inv.idInventario}"></td>
+                        <td th:text="${inv.producto != null ? inv.producto.nombre : 'Producto ' + inv.idInventario}"></td>
+                        <td><input type="number" name="stockActual" th:value="${inv.stockActual}"></td>
+                        <td><input type="number" name="stockMinimo" th:value="${inv.stockMinimo}"></td>
+                        <td><button type="submit" class="btn-update">Actualizar</button></td>
+                    </form>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

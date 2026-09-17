@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Historial de Ventas — Star Dinasty</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg-main: #080706; --bg-card: #12100d; --gold-primary: #c8a84b; --text-main: #f0ead8; --border-wire: rgba(200, 168, 75, 0.2); }
+        body { background: var(--bg-main); color: var(--text-main); font-family: 'Montserrat', sans-serif; padding: 30px; }
+        h1 { font-family: 'Cormorant Garamond', serif; color: var(--gold-primary); margin-bottom: 20px; }
+        .card { background: var(--bg-card); border: 1px solid var(--border-wire); padding: 20px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid var(--border-wire); padding: 12px; text-align: left; font-size: 0.85rem; }
+        th { background: #1a1713; color: var(--gold-primary); }
+    </style>
+</head>
+<body>
+    <div style="margin-bottom:20px;">
+        <a sec:authorize="hasRole('ROLE_ADMIN')" th:href="@{/admin/dashboard}" style="color:var(--gold-primary); text-decoration:none;">&larr; Volver al Dashboard Admin</a>
+        <a sec:authorize="hasRole('ROLE_EMPLEADO') and !hasRole('ROLE_ADMIN')" th:href="@{/empleado/dashboard}" style="color:var(--gold-primary); text-decoration:none;">&larr; Volver al Dashboard Empleado</a>
+    </div>
+
+    <h1>Historial de Ventas</h1>
+    <div class="card">
+        <table>
+            <thead>
+                <tr>
+                    <th># Venta</th>
+                    <th>Fecha</th>
+                    <th>Cliente</th>
+                    <th>Total</th>
+                    <th>Estado Pedido</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="v : ${ventas}">
+                    <td th:text="${v.idVenta}"></td>
+                    <td th:text="${#temporals.format(v.fecha, 'dd/MM/yyyy HH:mm')}"></td>
+                    <td th:text="${v.usuario != null ? v.usuario.primerNom + ' ' + v.usuario.primerApelli : 'Cliente Mostrador'}"></td>
+                    <td th:text="${'$' + v.total}"></td>
+                    <td th:text="${v.estadoPedido}"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

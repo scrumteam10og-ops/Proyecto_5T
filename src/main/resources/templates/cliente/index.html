@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Star Dinasty — Catálogo de Productos</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root { 
+            --bg-main: #080706; 
+            --bg-card: #12100d; 
+            --bg-input: #1a1713; 
+            --gold-primary: #c8a84b; 
+            --gold-light: #e2c56f; 
+            --text-main: #f0ead8; 
+            --text-muted: #8c8273; 
+            --border-wire: rgba(200, 168, 75, 0.2); 
+            --font-display: 'Cormorant Garamond', serif; 
+            --font-ui: 'Montserrat', sans-serif; 
+        }
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: var(--bg-main); color: var(--text-main); font-family: var(--font-ui); min-height: 100vh; }
+
+        header {
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border-wire);
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        header h1 { font-family: var(--font-display); font-size: 1.8rem; color: var(--gold-primary); }
+        .btn-nav {
+            color: var(--gold-primary);
+            border: 1px solid var(--border-wire);
+            padding: 8px 16px;
+            font-size: 0.7rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+        .btn-nav:hover { background: var(--gold-primary); color: var(--bg-main); }
+
+        .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
+
+        .filter-section { background: var(--bg-card); border: 1px solid var(--border-wire); padding: 20px; margin-bottom: 30px; }
+        .filter-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; align-items: end; }
+        .filter-group label { display: block; font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold-primary); margin-bottom: 6px; }
+        .filter-group input, .filter-group select { width: 100%; padding: 10px; background: var(--bg-input); border: 1px solid var(--border-wire); color: var(--text-main); font-size: 0.8rem; }
+        .btn-filter { background: var(--gold-primary); color: var(--bg-main); border: none; padding: 11px 20px; font-weight: 600; font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; cursor: pointer; }
+
+        .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 25px; }
+        .product-card { background: var(--bg-card); border: 1px solid var(--border-wire); padding: 20px; display: flex; flex-direction: column; justify-content: space-between; }
+        .product-title { font-family: var(--font-display); font-size: 1.3rem; color: var(--text-main); margin-bottom: 5px; }
+        .product-desc { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 15px; }
+        .product-price { font-size: 1.1rem; color: var(--gold-primary); font-weight: 600; margin-bottom: 15px; }
+        .btn-detail { display: block; text-align: center; background: transparent; border: 1px solid var(--border-wire); color: var(--gold-primary); padding: 10px; text-decoration: none; font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; transition: 0.3s; }
+        .btn-detail:hover { background: var(--gold-primary); color: var(--bg-main); }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Star Dinasty</h1>
+        <div>
+            <a th:href="@{/login}" class="btn-nav">Iniciar Sesión</a>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Filtros de búsqueda -->
+        <section class="filter-section">
+            <form th:action="@{/catalogo}" method="get" class="filter-grid">
+                <div class="filter-group">
+                    <label for="buscar">Buscar Producto</label>
+                    <input type="text" id="buscar" name="nombre" th:value="${nombreBuscado}" placeholder="Nombre del producto...">
+                </div>
+
+                <div class="filter-group">
+                    <label for="categoria">Categoría</label>
+                    <select id="categoria" name="idCategoria">
+                        <option value="">Todas las Categorías</option>
+                        <option th:each="cat : ${categorias}" 
+                                th:value="${cat.idCategoria}" 
+                                th:text="${cat.nombre}"
+                                th:selected="${cat.idCategoria == idCategoriaSeleccionada}">
+                        </option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <button type="submit" class="btn-filter">Filtrar</button>
+                </div>
+            </form>
+        </section>
+
+        <!-- Listado de Productos -->
+        <section class="products-grid">
+            <div class="product-card" th:each="prod : ${productos}">
+                <div>
+                    <h3 class="product-title" th:text="${prod.nombre}">Nombre Producto</h3>
+                    <p class="product-desc" th:text="${prod.descripcion}">Descripción breve...</p>
+                </div>
+                <div>
+                    <div class="product-price" th:text="${'$' + prod.precio}">$0.00</div>
+                    <a th:href="@{'/producto/detalle/' + ${prod.idProducto}}" class="btn-detail">Ver Detalle</a>
+                </div>
+            </div>
+        </section>
+    </div>
+
+</body>
+</html>

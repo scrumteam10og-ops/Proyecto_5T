@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Star Dinasty — Historial de Ventas</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg-main: #080706; --bg-card: #12100d; --bg-input: #1a1713; --gold-primary: #c8a84b; --gold-light: #e2c56f; --text-main: #f0ead8; --text-muted: #8c8273; --border-wire: rgba(200, 168, 75, 0.2); --border-wire-light: rgba(200, 168, 75, 0.08); --font-display: 'Cormorant Garamond', serif; --font-ui: 'Montserrat', sans-serif; }
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: var(--bg-main); color: var(--text-main); font-family: var(--font-ui); display: flex; min-height: 100vh; }
+        .dashboard-layout { width: 100%; display: grid; grid-template-columns: 260px 1fr; }
+        .sidebar { background: var(--bg-card); border-right: 1px solid var(--border-wire); padding: 40px 24px; }
+        .sidebar-logo { font-family: var(--font-display); font-size: 1.4rem; color: var(--gold-primary); margin-bottom: 40px; }
+        .sidebar-menu { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+        .sidebar-menu a { display: block; padding: 12px; color: var(--text-muted); text-decoration: none; font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase; border-left: 2px solid transparent; transition: all 0.3s; }
+        .sidebar-menu a.active, .sidebar-menu a:hover { color: var(--gold-primary); border-left-color: var(--gold-primary); background: var(--border-wire-light); }
+        .main-content { padding: 50px; overflow-y: auto; }
+        .page-title { font-family: var(--font-display); font-size: 2.5rem; font-weight: 300; margin-bottom: 30px; }
+        .page-title em { color: var(--gold-primary); font-style: italic; }
+        .data-table { width: 100%; border-collapse: collapse; background: var(--bg-card); border: 1px solid var(--border-wire); }
+        .data-table th, .data-table td { padding: 16px; text-align: left; font-size: 0.78rem; border-bottom: 1px solid var(--border-wire-light); }
+        .data-table th { font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold-primary); background: rgba(200,168,75,0.03); }
+    </style>
+</head>
+<body>
+    <div class="dashboard-layout">
+        <aside class="sidebar">
+            <div class="sidebar-logo">✦ Star Dinasty</div>
+            <ul class="sidebar-menu">
+                <li><a th:href="@{/productos}">Catálogo</a></li>
+                <li><a th:href="@{/carrito}">Mi Carrito</a></li>
+                <li><a th:href="@{/ventas/historial}" class="active">Mis Pedidos</a></li>
+            </ul>
+        </aside>
+        <main class="main-content">
+            <h1 class="page-title">Historial de <em>Ventas</em></h1>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>ID Venta</th>
+                        <th>Cliente</th>
+                        <th>Fecha</th>
+                        <th>Total</th>
+                        <th>Estado Pedido</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="v : ${ventas}">
+                        <td th:text="'#ORD-' + ${v.id}">#ORD-01</td>
+                        <td th:text="${v.usuario.nombre}">Cliente</td>
+                        <td th:text="${#temporals.format(v.fecha, 'dd/MM/yyyy HH:mm')}">01/01/2026</td>
+                        <td th:text="'$' + ${#numbers.formatInteger(v.total, 3, 'POINT')} + ' COP'">$0 COP</td>
+                        <td style="color:var(--gold-primary);" th:text="${v.estadoPedido}">Listo para recoger</td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(ventas)}">
+                        <td colspan="5" style="text-align: center; color: var(--text-muted);">No se registraron ventas aún.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </main>
+    </div>
+</body>
+</html>

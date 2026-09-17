@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Star Dinasty — Panel de Empleado</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg-main: #080706; --bg-card: #12100d; --gold-primary: #c8a84b; --text-main: #f0ead8; --text-muted: #8c8273; --border-wire: rgba(200, 168, 75, 0.2); --font-display: 'Cormorant Garamond', serif; }
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: var(--bg-main); color: var(--text-main); font-family: 'Montserrat', sans-serif; min-height: 100vh; }
+        header { background: var(--bg-card); border-bottom: 1px solid var(--border-wire); padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; }
+        header h1 { font-family: var(--font-display); font-size: 1.8rem; color: var(--gold-primary); }
+        .btn-logout { background: transparent; border: 1px solid var(--border-wire); color: var(--gold-primary); padding: 8px 16px; font-size: 0.7rem; text-transform: uppercase; cursor: pointer; }
+        .btn-logout:hover { background: var(--gold-primary); color: var(--bg-main); }
+        .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
+        .grid-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-top: 30px; }
+        .card { background: var(--bg-card); border: 1px solid var(--border-wire); padding: 30px; transition: transform 0.3s; }
+        .card:hover { border-color: var(--gold-primary); transform: translateY(-3px); }
+        .card-icon { font-size: 1.5rem; color: var(--gold-primary); margin-bottom: 15px; }
+        .card h3 { font-family: var(--font-display); font-size: 1.4rem; margin-bottom: 10px; }
+        .card p { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 20px; }
+        .card-link { font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold-primary); text-decoration: none; font-weight: 600; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Star Dinasty</h1>
+        <div style="display:flex; align-items:center; gap:20px;">
+            <span style="font-size:0.75rem; color:var(--text-muted);">
+                Rol: <strong style="color:var(--gold-primary);">EMPLEADO</strong>
+            </span>
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="btn-logout">Cerrar Sesión</button>
+            </form>
+        </div>
+    </header>
+
+    <div class="container">
+        <h2>Panel Operativo</h2>
+        <p style="color:var(--text-muted); font-size:0.85rem;">Acceso a la gestión de inventario y registro de ventas.</p>
+
+        <div class="grid-cards">
+            <div class="card">
+                <div class="card-icon">📦</div>
+                <h3>Inventario</h3>
+                <p>Consulte y actualice existencias de stock en tienda.</p>
+                <a th:href="@{/inventario}" class="card-link">Ir a Inventario &rarr;</a>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">📋</div>
+                <h3>Historial de Ventas</h3>
+                <p>Revise el registro histórico de ventas.</p>
+                <a th:href="@{/ventas}" class="card-link">Ver Ventas &rarr;</a>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

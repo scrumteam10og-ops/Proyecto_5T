@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Star Dinasty — Catálogo de Productos</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg-main: #080706; --bg-card: #12100d; --bg-input: #1a1713; --gold-primary: #c8a84b; --gold-light: #e2c56f; --text-main: #f0ead8; --text-muted: #8c8273; --border-wire: rgba(200, 168, 75, 0.2); --border-wire-light: rgba(200, 168, 75, 0.08); --font-display: 'Cormorant Garamond', serif; --font-ui: 'Montserrat', sans-serif; }
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: var(--bg-main); color: var(--text-main); font-family: var(--font-ui); display: flex; min-height: 100vh; }
+        .dashboard-layout { width: 100%; display: grid; grid-template-columns: 260px 1fr; }
+        .sidebar { background: var(--bg-card); border-right: 1px solid var(--border-wire); padding: 40px 24px; }
+        .sidebar-logo { font-family: var(--font-display); font-size: 1.4rem; color: var(--gold-primary); margin-bottom: 40px; }
+        .sidebar-menu { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+        .sidebar-menu a { display: block; padding: 12px; color: var(--text-muted); text-decoration: none; font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase; border-left: 2px solid transparent; transition: all 0.3s; }
+        .sidebar-menu a.active, .sidebar-menu a:hover { color: var(--gold-primary); border-left-color: var(--gold-primary); background: var(--border-wire-light); }
+        .main-content { padding: 50px; overflow-y: auto; }
+        .page-title { font-family: var(--font-display); font-size: 2.5rem; font-weight: 300; margin-bottom: 30px; }
+        .page-title em { color: var(--gold-primary); font-style: italic; }
+        .product-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+        .product-card { background: var(--bg-card); border: 1px solid var(--border-wire); padding: 20px; display: flex; flex-direction: column; }
+        .product-img-placeholder { width: 100%; aspect-ratio: 3/4; background: var(--bg-input); border: 1px solid var(--border-wire-light); margin-bottom: 16px; display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 0.7rem; }
+        .product-card h4 { font-family: var(--font-display); font-size: 1.3rem; font-weight: 400; }
+        .product-card .price { color: var(--gold-primary); font-size: 0.9rem; margin: 8px 0 16px; }
+        .btn-gold { width: 100%; padding: 12px; background: var(--gold-primary); border: 1px solid var(--gold-primary); color: var(--bg-main); font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; font-weight: 600; cursor: pointer; transition: 0.3s; }
+        .btn-gold:hover { background: var(--gold-light); }
+    </style>
+</head>
+<body>
+    <div class="dashboard-layout">
+        <aside class="sidebar">
+            <div class="sidebar-logo">✦ Star Dinasty</div>
+            <ul class="sidebar-menu">
+                <li><a th:href="@{/productos}" class="active">Catálogo</a></li>
+                <li><a th:href="@{/carrito}">Mi Carrito</a></li>
+                <li><a th:href="@{/ventas/historial}">Mis Pedidos</a></li>
+            </ul>
+        </aside>
+        <main class="main-content">
+            <h1 class="page-title">Colección <em>Disponible</em></h1>
+            <div class="product-grid">
+                <div class="product-card" th:each="producto : ${productos}">
+                    <div class="product-img-placeholder">PRENDA HD</div>
+                    <h4 th:text="${producto.nombre}">Nombre Prenda</h4>
+                    <p class="price" th:text="'$' + ${#numbers.formatInteger(producto.precio, 3, 'POINT')} + ' COP'">$0 COP</p>
+                    <form th:action="@{/carrito/agregar}" method="post">
+                        <input type="hidden" name="productoId" th:value="${producto.id}">
+                        <input type="hidden" name="cantidad" value="1">
+                        <button type="submit" class="btn-gold">Añadir al Carrito</button>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

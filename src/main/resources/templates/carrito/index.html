@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>STARDINASTY - Carrito de Compras</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto p-8">
+        <h1 class="text-3xl font-bold mb-6">Tu Carrito de Compras</h1>
+        
+        <div class="bg-white rounded-lg shadow p-6">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="border-b">
+                        <th class="py-2">Producto</th>
+                        <th class="py-2">Talla</th>
+                        <th class="py-2">Color</th>
+                        <th class="py-2">Cantidad</th>
+                        <th class="py-2">Precio</th>
+                        <th class="py-2">Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="item : ${items}" class="border-b">
+                        <td class="py-3" th:text="${item.inventario.nombre}">Producto</td>
+                        <td class="py-3" th:text="${item.talla.nombre}">Talla</td>
+                        <td class="py-3" th:text="${item.color.nombre}">Color</td>
+                        <td class="py-3" th:text="${item.cantidad}">1</td>
+                        <td class="py-3" th:text="'$' + ${item.inventario.valorVenta * item.cantidad}">$0</td>
+                        <td class="py-3">
+                            <form th:action="@{/carrito/eliminar/{id}(id=${item.idCarrito})}" method="post">
+                                <button type="submit" class="text-red-600 hover:underline">Eliminar</button>
+                            </form>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="mt-6 flex justify-between items-center">
+                <span class="text-2xl font-bold">Total: $<span th:text="${total}">0</span></span>
+                <button class="bg-green-600 text-white px-6 py-2 rounded font-bold hover:bg-green-700">Proceder al Pago</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
